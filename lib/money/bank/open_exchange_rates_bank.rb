@@ -6,6 +6,7 @@ require 'json'
 class Money
   module Bank
     class InvalidCache < StandardError ; end
+    class InvalidData < StandardError ; end
 
     class NoAppId < StandardError ; end
 
@@ -22,6 +23,7 @@ class Money
       end
 
       def update_rates
+        @doc = nil
         exchange_rates.each do |exchange_rate|
           rate = exchange_rate.last
           currency = exchange_rate.first
@@ -35,6 +37,8 @@ class Money
         text = read_from_url
         if has_valid_rates?(text)
           store_in_cache(text)
+        else
+          raise InvalidData
         end
       rescue Errno::ENOENT
         raise InvalidCache
@@ -51,19 +55,12 @@ class Money
       end
 
       def get_rate(from_currency, to_currency)
-        expire_rates
+        update_rates if rates_expired?
         super(from_currency, to_currency) || begin
           from_base_rate = super("USD", from_currency)
           to_base_rate = super("USD", to_currency)
           raise(Money::Bank::UnknownRateFormat, "No conversion rate known for '#{from_currency}' -> '#{to_currency}'") if from_base_rate.nil? || to_base_rate.nil?
           to_base_rate.to_f / from_base_rate.to_f
-        end
-      end
-
-      def expire_rates
-        if ttl_in_seconds && rates_expiration <= Time.now
-          update_rates
-          refresh_rates_expiration
         end
       end
 
@@ -84,6 +81,7 @@ class Money
       end
 
       def read_from_cache
+        return nil if rates_expired?
         if cache.is_a?(Proc)
           cache.call(nil)
         elsif cache.is_a?(String) && File.exist?(cache)
@@ -93,12 +91,17 @@ class Money
         end
       end
 
+      def rates_expired?
+        ttl_in_seconds && rates_expiration <= Time.now
+      end
+
       def source_url
         raise NoAppId if app_id.nil? || app_id.empty?
         "#{OER_URL}?app_id=#{app_id}"
       end
 
       def read_from_url
+        refresh_rates_expiration
         open(source_url).read
       end
 
@@ -110,7 +113,7 @@ class Money
       end
 
       def exchange_rates
-        @doc = JSON.parse(read_from_cache || read_from_url)
+        @doc ||= JSON.parse(read_from_cache || read_from_url)
         @oer_rates = @doc['rates']
         @doc['rates']
       end
