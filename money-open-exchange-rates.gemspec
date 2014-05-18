@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
-  s.name = "money-open-exchange-rates"
-  s.version = "0.1.7"
+  s.name = "iplan-money-open-exchange-rates"
+  s.version = "0.1.8"
   s.date = Time.now.utc.strftime("%Y-%m-%d")
   s.homepage = "http://github.com/spk/#{s.name}"
   s.authors = ["Laurent Arnoud", "Sam Lown"]
@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.license = 'MIT'
   s.test_files = Dir.glob("test/*_test.rb")
   s.require_paths = ["lib"]
-  s.required_ruby_version = ">= 1.9.2"
+  s.required_ruby_version = ">= 1.8.7"
   s.rubygems_version = %q{1.3.7}
   s.add_dependency "money", "=3.7.1"
   s.add_development_dependency "minitest", ">=2.0"
