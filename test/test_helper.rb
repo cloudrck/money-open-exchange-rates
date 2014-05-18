@@ -2,8 +2,8 @@
 require 'minitest/autorun'
 require 'rr'
 require 'money/bank/open_exchange_rates_bank'
-require 'monetize/core_extensions'
-require 'timecop'
+#require 'monetize/core_extensions'
+#require 'timecop'
 require 'pry'
 Money.silence_core_extensions_deprecations = true
 

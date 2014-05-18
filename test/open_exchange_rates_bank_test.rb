@@ -265,7 +265,7 @@ describe Money::Bank::OpenExchangeRatesBank do
       end
 
       it 'raises Money::Bank::UnknownRateFormat if no cross rates found' do
-        ->{ subject.get_rate('ZAR', 'ZMK') }.must_raise Money::Bank::UnknownRateFormat
+        lambda{ subject.get_rate('ZAR', 'ZMK') }.must_raise Money::Bank::UnknownRateFormat
       end
     end
   end
