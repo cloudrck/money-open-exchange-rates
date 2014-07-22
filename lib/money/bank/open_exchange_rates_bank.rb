@@ -12,7 +12,7 @@ class Money
 
     class OpenExchangeRatesBank < Money::Bank::VariableExchange
 
-      OER_URL = 'http://openexchangerates.org/latest.json'
+      OER_URL = 'http://openexchangerates.org/api/latest.json'
 
       attr_accessor :cache, :app_id
       attr_reader :doc, :oer_rates, :rates_expiration, :ttl_in_seconds
